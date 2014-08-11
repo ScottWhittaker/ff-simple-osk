@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <title>ff-simple-osk Demo</title>
+    <script src="../platform/platform.js"></script>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="import" href="ff-simple-osk.html">
+    <style>
+        .container {
+            margin-top: 32px;
+        }
+    </style>
+</head>
+<body unresolved>
+    <div class="container">
+        <div class="jumbotron">
+            <h1>ff-simple-osk</h1>
+            <p>send focus to keyboard, navigate with directional keys, enter to select, backspace to delete...</p>
+            <ff-simple-osk></ff-simple-osk>
+        </div>
+        <div>
+            <p class="alert alert-info hide" role="alert">
+                <strong>ff-simple-osk-changed</strong> event has been fired, do something cool with the value...
+                <span></span>
+            </p>
+        </div>
+    </div>
+    <script>
+        'use strict';
+        var span = document.querySelector('p > span');
+        var ff = document.querySelector('ff-simple-osk');
+        var alert = document.querySelector('.alert');
+        ff.addEventListener('ff-simple-osk-changed', function (e) {
+            span.textContent = this.value;
+            if(this.value != '') {
+                alert.classList.remove('hide');
+            } else {
+                alert.classList.add('hide');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <title>ff-simple-osk test</title>
+    <script src="../../platform/platform.js"></script>
+    <link rel="import" href="../../polymer-test-tools/tools.html">
+    <script src="../../polymer-test-tools/htmltest.js"></script>
+    <link rel="import" href="../ff-simple-osk.html">
+</head>
+<body>
+    <ff-simple-osk></ff-simple-osk>
+    <script>
+        document.addEventListener('polymer-ready', function () {
+
+            var osk = document.querySelector('ff-simple-osk');
+            assert.isNotNull(osk, 'ff-simple-osk element does not exist');
+
+            osk.addEventListener('ff-simple-osk-changed', function (event) {
+                assert.equal(osk.value, 'Hello');
+                done();
+            });
+
+            osk.value = 'Hello';
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,228 @@
+<link rel="import" href="../polymer/polymer.html">
+<!--
+Experimental keyboard component for use on connected TV's via a 5-way control on an RCU.
+
+Given the target here would be a connected TV, STB or game console we would have a minimum screen width of 1280px so
+there is no consideration for responsive behaviour with this component. A typical use case would be a search scenario
+where a user types in a character and a result set is returned, the user types a second character and the result set is
+filtered, updated and so on.
+
+In this use case the user only has to enter short strings so there is no need to consider using an input element or
+wrapping text, we just restrict the string to a max length.
+
+##### Example
+
+    <ff-simple-osk></ff-simple-osk>
+
+@element ff-simple-osk
+@status alpha
+@homepage http://scottwhittaker.github.io/ff-simple-osk
+-->
+<polymer-element name="ff-simple-osk" attributes="value" tabindex="0" on-keydown="{{keyDownHandler}}">
+    <template>
+        <link rel="stylesheet" href="ff-simple-osk.css"/>
+        <ul id="alpha">
+            <li class="selected">&amp;123</li>
+            <li>&#x2423;</li>
+            <li>A</li>
+            <li>B</li>
+            <li>C</li>
+            <li>D</li>
+            <li>E</li>
+            <li>F</li>
+            <li>G</li>
+            <li>H</li>
+            <li>I</li>
+            <li>J</li>
+            <li>K</li>
+            <li>L</li>
+            <li>M</li>
+            <li>N</li>
+            <li>O</li>
+            <li>P</li>
+            <li>Q</li>
+            <li>R</li>
+            <li>S</li>
+            <li>T</li>
+            <li>U</li>
+            <li>V</li>
+            <li>W</li>
+            <li>X</li>
+            <li>Y</li>
+            <li>Z</li>
+        </ul>
+        <ul id="numeric" class="hide">
+            <li class="selected">ABC</li>
+            <li>&#x2423;</li>
+            <li>0</li>
+            <li>1</li>
+            <li>2</li>
+            <li>3</li>
+            <li>4</li>
+            <li>5</li>
+            <li>6</li>
+            <li>7</li>
+            <li>8</li>
+            <li>9</li>
+            <li>0</li>
+            <li>@</li>
+            <li>.</li>
+            <li>,</li>
+            <li>-</li>
+            <li>_</li>
+            <li>/</li>
+        </ul>
+        <div id="value">{{value}}</div>
+        <content></content>
+    </template>
+    <script>
+        (function () {
+
+            'use strict';
+
+            var KeyCode = {
+                BACK: 8,
+                ENTER: 13,
+                LEFT: 37,
+                RIGHT: 39
+            };
+
+            var fragment = document.createDocumentFragment();
+
+            Polymer('ff-simple-osk', {
+
+                /**
+                 *  Specify maximum number of characters allowed. Defaults to 40.
+                 *
+                 *  Example:
+                 *
+                 *     <ff-simple-osk maxlength="32"></ff-simple-osk>
+                 *
+                 *  @attribute maxlength
+                 *  @type number
+                 *  @default 40
+                 */
+                maxlength: 40,
+
+                /**
+                 * The `value` attribute sets an initial value for the input
+                 *
+                 * Example:
+                 *
+                 *     <ff-simple-osk value="foo"></ff-simple-osk>
+                 *
+                 * @attribute value
+                 * @type string
+                 */
+                value: '',
+
+                /**
+                 * The `ff-simple-osk-changed` event is fired whenever `value` changes
+                 *
+                 * @event ff-simple-osk-changed
+                 */
+
+                alphaKeyboard: null,
+                numericKeyboard: null,
+                currentKeyboard: null,
+                currentIndex: 0,
+                selectedClassName: 'selected',
+
+                ready: function () {
+                    this.currentKeyboard = this.alphaKeyboard = this.$.alpha;
+                    this.numericKeyboard = this.$.numeric;
+                },
+
+                toggleKeyboard: function () {
+                    if (this.currentKeyboard === null) {
+                        this.showAlphaKeyboard();
+                        return;
+                    }
+                    this.currentKeyboard === this.alphaKeyboard ? this.showNumericKeyboard() : this.showAlphaKeyboard();
+                },
+
+                showAlphaKeyboard: function () {
+                    this.alphaKeyboard.classList.remove('hide');
+                    this.numericKeyboard.classList.add('hide');
+                    this.currentKeyboard = this.alphaKeyboard;
+                },
+
+                showNumericKeyboard: function () {
+                    this.alphaKeyboard.classList.add('hide');
+                    this.numericKeyboard.classList.remove('hide');
+                    this.currentKeyboard = this.numericKeyboard;
+                },
+
+                keyDownHandler: function (event, detail, sender) {
+                    switch (event.keyCode) {
+                    case KeyCode.ENTER:
+                        this.onEnter();
+                        event.preventDefault();
+                        break;
+                    case KeyCode.BACK:
+                        this.value = this.value.slice(0, -1);
+                        event.preventDefault();
+                        break;
+                    case KeyCode.LEFT:
+                        this.navigateLeft();
+                        event.preventDefault();
+                        break;
+                    case KeyCode.RIGHT:
+                        this.navigateRight();
+                        event.preventDefault();
+                        break;
+                    default:
+                    }
+
+                },
+
+                onEnter: function () {
+                    switch (this.currentIndex) {
+                    case 0:
+                        this.toggleKeyboard();
+                        break;
+                    case 1:
+                        this.value += " ";
+                        break;
+                    default:
+                        if (this.value.length >= this.maxlength) {
+                            return;
+                        }
+                        var text = this.currentKeyboard.children[this.currentIndex].innerHTML;
+                        this.value += text;
+                    }
+                },
+
+                navigateLeft: function () {
+                    if (this.currentIndex === 0) {
+                        // circular, jump to end
+                        this.currentKeyboard.children[this.currentIndex].classList.remove(this.selectedClassName);
+                        this.currentIndex = this.currentKeyboard.children.length - 1;
+                        this.currentKeyboard.children[this.currentIndex].classList.add(this.selectedClassName);
+                    } else {
+                        this.currentKeyboard.children[this.currentIndex].classList.remove(this.selectedClassName);
+                        this.currentIndex--;
+                        this.currentKeyboard.children[this.currentIndex].classList.add(this.selectedClassName);
+                    }
+                },
+
+                navigateRight: function () {
+                    if (this.currentIndex === this.currentKeyboard.children.length - 1) {
+                        // circular, jump to start
+                        this.currentKeyboard.children[this.currentIndex].classList.remove(this.selectedClassName);
+                        this.currentIndex = 0;
+                        this.currentKeyboard.children[this.currentIndex].classList.add(this.selectedClassName);
+                    } else {
+                        this.currentKeyboard.children[this.currentIndex].classList.remove(this.selectedClassName);
+                        this.currentIndex++;
+                        this.currentKeyboard.children[this.currentIndex].classList.add(this.selectedClassName);
+                    }
+                },
+
+                valueChanged: function (oldValue, newValue) {
+                    this.fire('ff-simple-osk-changed');
+                }
+            });
+        }());
+    </script>
+</polymer-element>

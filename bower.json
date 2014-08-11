@@ -1,0 +1,7 @@
+{
+  "name": "ff-simple-osk#gh-pages",
+  "private": true,
+  "dependencies": {
+    "ff-simple-osk": "scottwhittaker/ff-simple-osk#master"
+  }
+}

@@ -1,0 +1,19 @@
+{
+    "name": "ff-simple-osk",
+    "version": "0.0.0",
+    "authors": [
+        "Scott Whittaker <scott@fiftyfathom.co.uk>"
+    ],
+    "description": "Simple on-screen keyboard for use on connected TV's, STB's and games consoles.",
+    "keywords": "ff-simple-osk, polymer, web-components",
+    "main": "ff-simple-osk.html",
+    "license": "MIT",
+    "homepage": "https://github.com/scottwhittaker/ff-simple-osk/",
+    "ignore": [
+        "**/.*"
+    ],
+    "dependencies": {
+        "polymer": "Polymer/polymer#~0.3.3",
+        "polymer-test-tools": "Polymer/polymer-test-tools#~0.3.3"
+    }
+}
